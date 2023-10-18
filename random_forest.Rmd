@@ -1,0 +1,42 @@
+Random Forest
+```{r}
+library(randomForest)
+# Carregando os Dados e transformado as strings para fatores
+dados = read.csv('soybean.csv', stringsAsFactors = T)
+dim(dados)
+# Classes
+unique(dados$class)
+```
+Dados de treino e teste
+```{r}
+set.seed(1234)
+# Gerando dois conjuntos de dados aleatórios, para Teste e Treino
+# Gerando com 70% e 30% das instâncias, aproximadamente
+amostra = sample(2, 683, replace = T, prob = c(0.7, 0.3))
+dadostreino = dados[amostra == 1,]
+dadosteste = dados[amostra == 2,]
+dim(dadostreino)
+dim(dadosteste)
+```
+Gera o modelo
+```{r}
+# Construindo o modelo usando os dados de treino
+floresta = randomForest(class ~ ., data = dadostreino, ntree = 100, proximity = T)
+floresta
+plot(floresta)
+```
+Previsão
+```{r}
+# Testando o modelo, fazendo a previsão com os dados de teste
+previsao = predict(floresta, dadosteste)
+previsao
+# Matriz de Confusão
+floresta$confusion
+```
+Precisão
+```{r}
+# Taxa de erros
+mean(floresta$confusion[, 'class.error'])
+# Taxa de acertos
+1 - mean(floresta$confusion[, 'class.error'])
+```
